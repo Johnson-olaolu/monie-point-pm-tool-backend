@@ -1,18 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { Role } from './schema/role.schema';
 import { Model } from 'mongoose';
 import { getModelToken } from '@nestjs/mongoose';
+import { Role } from './schemas/role.schema';
+import { MockModel } from 'src/database/test/mock.model';
 
 describe('RoleService', () => {
   let service: RoleService;
   let model: Model<Role>;
 
-  const createRoleDto: CreateRoleDto = {
-    name: 'Admin',
-    description: 'Test Description',
+  const mockRole = {
+    name: 'admin',
+    description: '',
   };
+
+  class MockRole extends MockModel<Role> {
+    protected entityStub: Role = mockRole;
+  }
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -20,14 +25,7 @@ describe('RoleService', () => {
         RoleService,
         {
           provide: getModelToken(Role.name),
-          useValue: {
-            create: jest.fn(),
-            new: jest.fn(),
-            constructor: jest.fn(),
-            find: jest.fn(),
-            findOne: jest.fn(),
-            save: jest.fn(),
-          },
+          useValue: MockRole,
         },
       ],
     }).compile();
@@ -41,17 +39,12 @@ describe('RoleService', () => {
   });
 
   it('should create a new role', async () => {
-    const mockRole = { ...createRoleDto };
-
-    // jest.spyOn(model, 'create').mockResolvedValueOnce(mockRole as any);
-    const mockSave = jest.fn().mockResolvedValue(mockRole);
-    jest.spyOn(model, 'create').mockImplementationOnce(() => {
-      return { save: mockSave };
-    });
+    const createRoleDto: CreateRoleDto = {
+      name: 'admin',
+      description: '',
+    };
 
     const result = await service.create(createRoleDto);
-
     expect(result).toEqual(mockRole);
-    expect(model.create).toHaveBeenCalledWith(createRoleDto);
   });
 });

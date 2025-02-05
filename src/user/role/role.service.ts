@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Role } from './schema/role.schema';
 import { Model } from 'mongoose';
+import { Role } from './schemas/role.schema';
 
 @Injectable()
 export class RoleService {
@@ -11,8 +11,7 @@ export class RoleService {
 
   async create(createRoleDto: CreateRoleDto) {
     const newRole = new this.roleModel(createRoleDto);
-    await newRole.save();
-    return 'role created';
+    return await newRole.save();
   }
 
   findAll() {
