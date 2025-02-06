@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { configureSwagger } from './config/swaggar.config';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from './config/env.config';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -11,6 +11,7 @@ async function bootstrap() {
     origin: '*',
   });
   app.setGlobalPrefix('/api');
+  app.useGlobalPipes(new ValidationPipe());
   configureSwagger(app, 'documentation');
   await app.listen(
     app.get(ConfigService<EnvironmentVariables>).get('PORT'),

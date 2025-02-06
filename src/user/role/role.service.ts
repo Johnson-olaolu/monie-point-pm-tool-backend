@@ -1,25 +1,50 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role } from './schemas/role.schema';
+import { tryCatch } from 'bullmq';
 
 @Injectable()
 export class RoleService {
   constructor(@InjectModel(Role.name) private roleModel: Model<Role>) {}
 
   async create(createRoleDto: CreateRoleDto) {
-    const newRole = new this.roleModel(createRoleDto);
-    return await newRole.save();
+    try {
+      const newRole = await this.roleModel.create(createRoleDto);
+      return newRole;
+    } catch (error: any) {
+      if (error.code === 11000) {
+        throw new ConflictException(
+          `Role with name ${createRoleDto.name} already exists`,
+        );
+      } else {
+        throw new InternalServerErrorException();
+      }
+    }
   }
 
-  findAll() {
-    return `This action returns all role`;
+  async findAll() {
+    return await this.roleModel.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async findOne(id: string) {
+    const role = await this.roleModel.findById(id);
+    if (!role) {
+      throw new NotFoundException('Role not found');
+    }
+    return role;
+  }
+
+  async findOneByName(name: string) {
+    const role = await this.roleModel.findOne({ name });
+    return role;
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {
