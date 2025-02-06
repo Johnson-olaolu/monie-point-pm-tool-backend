@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -38,13 +39,17 @@ describe('RoleService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new role', async () => {
-    const createRoleDto: CreateRoleDto = {
-      name: 'admin',
-      description: '',
-    };
+  describe('create', () => {
+    it('should create a new role', async () => {
+      const createRoleDto: CreateRoleDto = {
+        name: 'admin',
+        description: '',
+      };
 
-    const result = await service.create(createRoleDto);
-    expect(result).toEqual(mockRole);
+      const result = await service.create(createRoleDto);
+      expect(result).toEqual(mockRole);
+    });
+
+    it('should ');
   });
 });
