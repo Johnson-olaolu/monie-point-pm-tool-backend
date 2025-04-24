@@ -11,7 +11,7 @@ describe('UserService', () => {
   // Mock Mongoose model
   const mockUserModel = {
     findById: jest.fn(), // Mock for reading by ID
-    create: jest.fn(),   // Mock for creating
+    create: jest.fn(), // Mock for creating
     findByIdAndUpdate: jest.fn(), // Mock for updating
     findByIdAndDelete: jest.fn(), // Mock for deleting
   };
@@ -50,7 +50,13 @@ describe('UserService', () => {
   // Test for reading a user by ID
   it('should return a user by ID', async () => {
     const userId = '12345';
-    const mockUser = { _id: userId, name: 'Test User', email: 'test@example.com', password: 'password123', role: 'user' };
+    const mockUser = {
+      _id: userId,
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'password123',
+      role: 'user',
+    };
     mockUserModel.findById.mockResolvedValue(mockUser); // Mock successful find
 
     const result = await service.findById(userId);
@@ -70,7 +76,13 @@ describe('UserService', () => {
   it('should update and return the modified user', async () => {
     const userId = '12345';
     const updateUserDto: UpdateUserDto = { name: 'Updated User' }; // Only updating name (partial)
-    const mockUpdatedUser = { _id: userId, name: 'Updated User', email: 'test@example.com', password: 'password123', role: 'user' };
+    const mockUpdatedUser = {
+      _id: userId,
+      name: 'Updated User',
+      email: 'test@example.com',
+      password: 'password123',
+      role: 'user',
+    };
     mockUserModel.findByIdAndUpdate.mockResolvedValue(mockUpdatedUser); // Mock successful update
 
     const result = await service.update(userId, updateUserDto);
@@ -78,7 +90,7 @@ describe('UserService', () => {
     expect(mockUserModel.findByIdAndUpdate).toHaveBeenCalledWith(
       userId,
       { $set: updateUserDto },
-      { new: true } // Return updated document
+      { new: true }, // Return updated document
     ); // Verify method call with correct args
   });
 
@@ -88,13 +100,21 @@ describe('UserService', () => {
     const updateUserDto: UpdateUserDto = { name: 'Updated User' };
     mockUserModel.findByIdAndUpdate.mockResolvedValue(null); // Mock user not found
 
-    await expect(service.update(userId, updateUserDto)).rejects.toThrow('User not found');
+    await expect(service.update(userId, updateUserDto)).rejects.toThrow(
+      'User not found',
+    );
   });
 
   // Test for deleting a user
   it('should delete a user and return the deleted user', async () => {
     const userId = '12345';
-    const mockDeletedUser = { _id: userId, name: 'Test User', email: 'test@example.com', password: 'password123', role: 'user' };
+    const mockDeletedUser = {
+      _id: userId,
+      name: 'Test User',
+      email: 'test@example.com',
+      password: 'password123',
+      role: 'user',
+    };
     mockUserModel.findByIdAndDelete.mockResolvedValue(mockDeletedUser); // Mock successful deletion
 
     const result = await service.delete(userId);
