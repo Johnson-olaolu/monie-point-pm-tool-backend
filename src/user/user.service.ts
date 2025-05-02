@@ -1,42 +1,34 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Profile } from './entities/profile.entity';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>, // Inject the UserRepository
+    @InjectRepository(Profile)
+    private readonly profileRepository: Repository<Profile>, // Inject the ProfileRepository
+  ) {}
 
-  // Fetch a user by ID
-  async findById(id: string): Promise<User> {
-    const user = await this.userModel.findById(id); // Remove .exec() as it's not needed
-    if (!user) throw new Error('User not found'); // Handle not found case
-    return user; // Return the found user
+  create(createUserDto: CreateUserDto) {
+    return 'This action adds a new user';
   }
 
-  // Create a new user
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const newUser = await this.userModel.create(createUserDto); // Create user in DB
-    return newUser; // Return the created user
+  findAll() {
+    return `This action returns all user`;
   }
-
-  // Update an existing user by ID
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const updatedUser = await this.userModel.findByIdAndUpdate(
-      id,
-      { $set: updateUserDto },
-      { new: true } // Return updated document
-    ); // Remove .exec() as it's not needed
-    if (!updatedUser) throw new Error('User not found'); // Handle not found case
-    return updatedUser; // Return the updated user
+  findOne(id: number) {
+    return `This action returns a #${id} user`;
   }
-
-  // Delete a user by ID
-  async delete(id: string): Promise<User> {
-    const deletedUser = await this.userModel.findByIdAndDelete(id); // Remove .exec() as it's not needed
-    if (!deletedUser) throw new Error('User not found'); // Handle not found case
-    return deletedUser; // Return the deleted user
+  update(id: number, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`;
+  }
+  remove(id: number) {
+    return `This action removes a #${id} user`;
   }
 }

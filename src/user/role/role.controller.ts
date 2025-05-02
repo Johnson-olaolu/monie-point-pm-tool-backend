@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
 } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { CreateRoleDto } from './dto/create-role.dto';
@@ -17,62 +16,27 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Post()
-  async create(@Body() createRoleDto: CreateRoleDto) {
-    const data = await this.roleService.create(createRoleDto);
-    return {
-      success: true,
-      message: 'Role created successfully',
-      data,
-    };
+  create(@Body() createRoleDto: CreateRoleDto) {
+    return this.roleService.create(createRoleDto);
   }
 
   @Get()
-  async findAll() {
-    const data = await this.roleService.findAll();
-    return {
-      success: true,
-      message: 'Roles retrieved successfully',
-      data,
-    };
-  }
-
-  @Get('name')
-  async findByName(@Query('name') name: string) {
-    const data = await this.roleService.findByName(name);
-    return {
-      success: true,
-      message: 'Role retrieved successfully',
-      data,
-    };
+  findAll() {
+    return this.roleService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const data = await this.roleService.findOne(id);
-    return {
-      success: true,
-      message: 'Role retrieved successfully',
-      data,
-    };
+  findOne(@Param('id') id: string) {
+    return this.roleService.findOneById(+id);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    const data = await this.roleService.update(id, updateRoleDto);
-    return {
-      success: true,
-      message: 'Role updated successfully',
-      data,
-    };
+  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    return this.roleService.update(+id, updateRoleDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    const data = await this.roleService.remove(id);
-    return {
-      success: true,
-      message: 'Role deleted successfully',
-      data,
-    };
+  remove(@Param('id') id: string) {
+    return this.roleService.remove(+id);
   }
 }

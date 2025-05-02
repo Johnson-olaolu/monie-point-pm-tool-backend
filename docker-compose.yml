@@ -1,13 +1,28 @@
 version: '3.8'
 
 services:
-  mongo:
-    image: mongo
+  postgres:
+    image: postgres:latest
     ports:
-      - '27017:27017'
+      - '5432:5432'
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
     volumes:
-      - mongodb_data:/data/db
-      - mongodb_config:/data/configdb
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - greenland
+      
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - '5050:80'
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
     networks:
       - greenland
 
@@ -24,5 +39,4 @@ networks:
     driver: bridge
 
 volumes:
-  mongodb_data:
-  mongodb_config:
+  postgres_data:

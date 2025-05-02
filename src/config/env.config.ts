@@ -36,7 +36,27 @@ export class EnvironmentVariables {
   JWT_EXPIRATION_TIME: string;
 
   @IsString()
-  MONGODB_URI: string;
+  @IsNotEmpty()
+  DB_HOST: string;
+
+  // @IsNumber()
+  DB_PORT: number;
+
+  @IsString()
+  @IsNotEmpty()
+  DB_USER: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DB_PASSWORD: string;
+
+  @IsString()
+  @IsNotEmpty()
+  DB_DATABASE: string;
+
+  @IsString()
+  @IsOptional()
+  POSTGRES_CERT: string;
 
   @IsString()
   REDIS_PORT: string;
