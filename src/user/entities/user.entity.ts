@@ -8,6 +8,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   Relation,
@@ -18,6 +19,8 @@ import * as bcrypt from 'bcryptjs';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import { isBcryptHash } from 'src/utils/misc';
 import { Profile } from './profile.entity';
+import { Role } from '../role/entities/role.entity';
+import { RegistrationTypeEnum } from 'src/utils/constants';
 
 @Entity()
 @Index(['email', 'emailVerificationToken'])
@@ -43,15 +46,7 @@ export class User extends BaseEntity {
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
-  emailVerificationTokenTTL: Date;
-
-  @Exclude({ toPlainOnly: true })
-  @Column({ nullable: true })
   passwordResetToken: string;
-
-  @Exclude({ toPlainOnly: true })
-  @Column({ nullable: true })
-  passwordResetTokenTTL: Date;
 
   @Column({ default: false })
   isEmailVerified: boolean;
@@ -62,45 +57,19 @@ export class User extends BaseEntity {
   @JoinColumn()
   profile: Relation<Profile>;
 
-  // @ManyToOne(() => Role)
-  // @JoinColumn({ name: 'roleName', referencedColumnName: 'name' })
-  // role: Role;
+  @ManyToOne(() => Role)
+  @JoinColumn()
+  role: Role;
 
-  // @Column()
-  // @Index()
-  // roleName: string;
+  @Column()
+  @Index()
+  roleName: string;
 
   @Column({ default: false })
   acceptedInvite: boolean;
 
-  // @Column({ default: RegistrationTypeEnum.EMAIL })
-  // registrationType: RegistrationTypeEnum;
-
-  // @ManyToOne(() => Company, (company) => company.users)
-  // @JoinColumn({ name: 'companyId', referencedColumnName: 'id' })
-  // company: Relation<Company>;
-
-  // @Column({ nullable: true })
-  // @Index()
-  // companyId: string;
-
-  // @OneToOne(() => File)
-  // @JoinColumn({ name: 'profilePictureUrl', referencedColumnName: 'url' })
-  // profilePicture: Relation<File>;
-
-  // @Column({ nullable: true })
-  // profilePictureUrl: string;
-
-  // @Column({
-  //   nullable: true,
-  // })
-  // bio: string;
-
-  // @Column({ nullable: true })
-  // contactEmail: string;
-
-  // @Column({ nullable: true })
-  // contactPhoneNo: string;
+  @Column({ default: RegistrationTypeEnum.EMAIL })
+  registrationType: RegistrationTypeEnum;
 
   @CreateDateColumn()
   public createdAt: Date;

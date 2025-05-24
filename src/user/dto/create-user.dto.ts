@@ -1,17 +1,37 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import {
+  IsString,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsNotEmpty,
+  IsStrongPassword,
+} from 'class-validator';
+import { RoleNameEnum } from 'src/utils/constants';
 
 // DTO for creating a new user
 export class CreateUserDto {
-  @IsString() // Ensure name is a string
+  @IsString()
+  @IsNotEmpty()
   name: string;
 
-  @IsEmail() // Ensure email is a valid email format
+  @IsEmail()
+  @IsNotEmpty()
   email: string;
 
-  @IsString() // Ensure password is a string
-  @MinLength(6) // Password must be at least 6 characters
+  @IsNotEmpty()
+  @IsStrongPassword(
+    {
+      minLength: 6,
+      minLowercase: 1,
+      minNumbers: 1,
+      minSymbols: 1,
+      minUppercase: 1,
+    },
+    { message: 'Please enter strong password' },
+  )
   password: string;
 
-  @IsString() // Ensure role is a string (optional, defaults in schema)
-  role?: string;
+  @IsEnum(RoleNameEnum)
+  @IsOptional()
+  roleName?: RoleNameEnum;
 }
