@@ -7,6 +7,7 @@ import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { RoleNameEnum } from 'src/utils/constants';
 import { RoleService } from './role/role.service';
+import * as bcrypt from 'bcryptjs';
 import {
   BadRequestException,
   InternalServerErrorException,
@@ -38,6 +39,12 @@ describe('UserService', () => {
     createQueryRunner: jest.fn(() => mockQueryRunner),
   } as unknown as DataSource;
 
+  const createUserDto: CreateUserDto = {
+    email: 'superAdmin@pmtool.com',
+    name: 'Super Admin',
+    password: 'Admin_123',
+    roleName: RoleNameEnum.USER,
+  };
   beforeEach(async () => {
     // Set up the testing module with mocked dependencies
     const module: TestingModule = await Test.createTestingModule({
@@ -48,6 +55,7 @@ describe('UserService', () => {
           useValue: {
             find: jest.fn(),
             findOneBy: jest.fn(),
+            findOne: jest.fn(),
             create: jest.fn(),
             save: jest.fn(),
             delete: jest.fn(),
@@ -86,13 +94,6 @@ describe('UserService', () => {
   });
 
   it('should create a new user', async () => {
-    const createUserDto: CreateUserDto = {
-      email: 'superAdmin@pmtool.com',
-      name: 'Super Admin',
-      password: 'Admin_123',
-      roleName: RoleNameEnum.USER,
-    };
-
     const user = {
       ...createUserDto,
       id: '123456',
@@ -130,13 +131,6 @@ describe('UserService', () => {
   });
 
   it('should rollback transaction on error', async () => {
-    const createUserDto: CreateUserDto = {
-      email: 'superAdmin@pmtool.com',
-      name: 'Super Admin',
-      password: 'Admin_123',
-      roleName: RoleNameEnum.USER,
-    };
-
     const user = {
       ...createUserDto,
       id: '123456',
@@ -160,12 +154,6 @@ describe('UserService', () => {
   });
 
   it('should throw BadRequestException if email already exists', async () => {
-    const createUserDto: CreateUserDto = {
-      email: 'superAdmin@pmtool.com',
-      name: 'Super Admin',
-      password: 'Admin_123',
-      roleName: RoleNameEnum.USER,
-    };
     const duplicateKeyError = {
       code: '23505',
       detail: 'Key (email)=(test@example.com) already exists.',
@@ -188,5 +176,60 @@ describe('UserService', () => {
     await expect(service.create(createUserDto)).rejects.toThrow(
       duplicateKeyError.detail,
     );
+  });
+
+  it('should hash the password before saving', async () => {
+    const plainPassword = 'mySecret123';
+    const user = new User();
+    user.email = 'test@example.com';
+    user.password = plainPassword;
+
+    // Simulate TypeORM's lifecycle hook manually
+    await user.hashPassword();
+
+    expect(user.password).not.toBe(plainPassword);
+    expect(await bcrypt.compare(plainPassword, user.password)).toBe(true);
+  });
+
+  it('should  fetch all users ', async () => {
+    const users = [
+      {
+        ...createUserDto,
+        id: '123456',
+      },
+    ] as User[];
+
+    jest.spyOn(userRepository, 'find').mockReturnValue(Promise.resolve(users));
+
+    const result = await service.findAll();
+
+    expect(result).toEqual(users);
+    expect(userRepository.find).toHaveBeenCalled();
+  });
+
+  it('should find user based on id', async () => {
+    const user = {
+      ...createUserDto,
+      id: '123456',
+    } as User;
+
+    jest
+      .spyOn(userRepository, 'findOne')
+      .mockReturnValue(Promise.resolve(user));
+
+    expect(await service.findOne('12345')).toEqual(user);
+  });
+
+  it('should find a user based on email', async () => {
+    const user = {
+      ...createUserDto,
+      id: '123456',
+    } as User;
+
+    jest
+      .spyOn(userRepository, 'findOne')
+      .mockReturnValue(Promise.resolve(user));
+
+    expect(await service.findOneByEmail('email@pmtool.com')).toEqual(user);
   });
 });
