@@ -90,6 +90,30 @@ export class EnvironmentVariables {
 
   @IsString()
   EMAIL_PASSWORD: string;
+
+  @IsString()
+  RESEND_API_KEY: string;
+
+  @IsString()
+  FIREBASE_PROJECT_ID: string;
+
+  @IsString()
+  FIREBASE_PRIVATE_KEY: string;
+
+  @IsString()
+  FIREBASE_CLIENT_EMAIL: string;
+
+  @IsString()
+  FIREBASE_DATABSE_URL: string;
+
+  @IsString()
+  META_BASE_URL: string;
+
+  @IsString()
+  META_ACCESS_TOKEN: string;
+
+  @IsString()
+  META_PHONE_NUMBER_ID: string;
 }
 
 export function validateEnv(config: Record<string, unknown>) {

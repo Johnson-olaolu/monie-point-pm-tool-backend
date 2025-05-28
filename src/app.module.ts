@@ -11,6 +11,9 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { SeedModule } from './seed/seed.module';
 import { DatabaseModule } from './database/database.module';
+import { NotificationModule } from './notification/notification.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ServicesModule } from './services/services.module';
 
 @Module({
   imports: [
@@ -48,10 +51,17 @@ import { DatabaseModule } from './database/database.module';
       }),
       inject: [ConfigService],
     }),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      maxListeners: 10,
+    }),
     AuthModule,
     UserModule,
     SeedModule,
     DatabaseModule,
+    NotificationModule,
+    ServicesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
