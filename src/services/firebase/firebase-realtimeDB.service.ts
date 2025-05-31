@@ -1,9 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { credential, initializeApp } from 'firebase-admin';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { App } from 'firebase-admin/app';
 import { Database } from 'firebase-admin/lib/database/database';
-import { EnvironmentVariables } from 'src/config/env.config';
 import {
   DataSnapshot,
   getDatabase,
@@ -12,21 +9,10 @@ import {
 
 @Injectable()
 export class FirebaseRealtimeDBService {
-  private app: App;
   private database: Database;
   private logger = new Logger(FirebaseRealtimeDBService.name);
 
-  constructor(private configService: ConfigService<EnvironmentVariables>) {
-    this.app = initializeApp({
-      credential: credential.cert({
-        projectId: this.configService.get('FIREBASE_PROJECT_ID'),
-        privateKey: this.configService
-          .get('FIREBASE_PRIVATE_KEY')
-          ?.replace(/\\n/g, '\n'),
-        clientEmail: this.configService.get('FIREBASE_CLIENT_EMAIL'),
-      }),
-      databaseURL: configService.get('FIREBASE_DATABSE_URL'),
-    });
+  constructor(@Inject('FIREBASE_APP') private readonly app: App) {
     this.database = getDatabase(this.app);
   }
 

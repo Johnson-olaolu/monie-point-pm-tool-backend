@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import {
+  WhatsAppMessageDto,
   WhatsAppMessageResponseDto,
   WhatsAppMessageTemplateTextDto,
 } from './dto/whatsapp.dto';
@@ -15,7 +16,19 @@ export class MetaWhatsAppService {
     private configService: ConfigService<EnvironmentVariables>,
   ) {}
 
-  async sendWhatsAppMessageTemplateText(
+  async sendWhatsappMessage(whatsAppMessageDto: WhatsAppMessageDto) {
+    switch (whatsAppMessageDto.type) {
+      case 'template-text':
+        return await this.sendWhatsAppMessageTemplateText(
+          whatsAppMessageDto.value,
+        );
+
+      default:
+        break;
+    }
+  }
+
+  private async sendWhatsAppMessageTemplateText(
     whatsAppMessageTemplateTextDto: WhatsAppMessageTemplateTextDto,
   ) {
     const { data } = await lastValueFrom(

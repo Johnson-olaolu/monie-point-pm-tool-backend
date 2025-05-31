@@ -46,6 +46,10 @@ export class User extends BaseEntity {
 
   @Exclude({ toPlainOnly: true })
   @Column({ nullable: true })
+  emailVerificationTokenTTL: string;
+
+  @Exclude({ toPlainOnly: true })
+  @Column({ nullable: true })
   passwordResetToken: string;
 
   @Column({ default: false })
@@ -68,7 +72,7 @@ export class User extends BaseEntity {
   @Column({ default: false })
   acceptedInvite: boolean;
 
-  @Column({ default: RegistrationTypeEnum.EMAIL })
+  @Column({ default: RegistrationTypeEnum.EMAIL, type: 'char' })
   registrationType: RegistrationTypeEnum;
 
   @CreateDateColumn()

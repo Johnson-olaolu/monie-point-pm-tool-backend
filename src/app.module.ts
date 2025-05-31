@@ -14,6 +14,8 @@ import { DatabaseModule } from './database/database.module';
 import { NotificationModule } from './notification/notification.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ServicesModule } from './services/services.module';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { ExpressAdapter } from '@bull-board/express';
 
 @Module({
   imports: [
@@ -50,6 +52,10 @@ import { ServicesModule } from './services/services.module';
         },
       }),
       inject: [ConfigService],
+    }),
+    BullBoardModule.forRoot({
+      route: '/queues',
+      adapter: ExpressAdapter, // Or FastifyAdapter from `@bull-board/fastify`
     }),
     EventEmitterModule.forRoot({
       wildcard: true,

@@ -1,7 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from 'src/config/env.config';
-import { App, initializeApp } from 'firebase-admin/app';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { App } from 'firebase-admin/app';
 import {
   BatchResponse,
   getMessaging,
@@ -9,25 +7,14 @@ import {
   Messaging,
   MulticastMessage,
 } from 'firebase-admin/messaging';
-import { credential } from 'firebase-admin';
 import { NotificationPayloadDto } from './dto/firebase-messaging.dto';
 
 @Injectable()
 export class FirebaseMessagingService {
-  private app: App;
   private messaging: Messaging;
   private logger = new Logger(FirebaseMessagingService.name);
 
-  constructor(private configService: ConfigService<EnvironmentVariables>) {
-    this.app = initializeApp({
-      credential: credential.cert({
-        projectId: this.configService.get('FIREBASE_PROJECT_ID'),
-        privateKey: this.configService
-          .get('FIREBASE_PRIVATE_KEY')
-          ?.replace(/\\n/g, '\n'),
-        clientEmail: this.configService.get('FIREBASE_CLIENT_EMAIL'),
-      }),
-    });
+  constructor(@Inject('FIREBASE_APP') private readonly app: App) {
     this.messaging = getMessaging(this.app);
   }
 

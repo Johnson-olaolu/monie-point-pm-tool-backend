@@ -16,20 +16,31 @@ export class WhatsAppMessageResponseDto {
 export class WhatsAppMessageTemplateTextDto {
   recipientNumber: string;
   templateName: string;
-  namedParamaterInput: {
-    type: 'body';
+  namedParamaterInput?: {
+    type: 'body' | 'header';
     parameters: {
-      type: string;
+      type: 'text';
       parameter_name: string;
       text: string;
     }[];
   };
-  positionalParamaterInput: {
-    type: 'body';
+  positionalParamaterInput?: {
+    type: 'body' | 'header';
     parameters: {
-      type: string;
-      parameter_name: string;
+      type: 'text';
       text: string;
     }[];
   };
 }
+
+export type WhatsappMessageMap = {
+  'template-text': WhatsAppMessageTemplateTextDto;
+};
+
+// export type WhatsAppMessageDto = {<T extends keyof WhatsappMessageMap>(type: T, data: WhatsappMessageMap[T]) }
+export type WhatsAppMessageDto = {
+  [T in keyof WhatsappMessageMap]: {
+    type: T;
+    value: WhatsappMessageMap[T];
+  };
+}[keyof WhatsappMessageMap];

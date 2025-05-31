@@ -92,6 +92,9 @@ export class EnvironmentVariables {
   EMAIL_PASSWORD: string;
 
   @IsString()
+  MAIL_FROM: string;
+
+  @IsString()
   RESEND_API_KEY: string;
 
   @IsString()
